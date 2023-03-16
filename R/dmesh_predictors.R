@@ -1,0 +1,79 @@
+#'
+#' @title
+#' Summarize predictors to dual mesh
+#'
+#' @description
+#' This function summarizes predictors to dual mesh. Predictors are assumed to be numerical values.
+#'
+#' @param dmesh A dual mesh
+#' @param predictors A SpatRaster with predictor values
+#'
+#'
+#' @details
+#' Parallelization can be enabled by choosing a plan from the future package and the mesh will be splitted in chunks detemined by the number of workers. Don't forget to reset the plan to sequential when done.
+#'
+#' When the predictors do not cover the extent of the dual mesh, empty cells will be filled with the value of the nearest neighbour cell.
+#'
+#' @returns
+#'
+#'
+#' @examples
+#'
+#'
+#' @importFrom exactextractr exact_extract
+#' @importFrom future nbrOfWorkers
+#' @importFrom future.apply future_apply
+#' @importFrom sf st_centroid st_coordinates st_transform st_crs
+#' @importFrom data.table as.data.table
+#' @importFrom FNN knnx.index
+#'
+#' @export
+#'
+#'
+#'
+dmesh_predictors<-function(dmesh,predictors){
+  #plan(multicore,workers=5)
+  dm<-st_transform(dmesh$dmesh,st_crs(predictors))
+  cores<-nbrOfWorkers() # get nbr of workers from the chosen plan
+  chunks <- split(1:nrow(dm), rep(1:cores, each=ceiling(nrow(dm)/cores))[1:nrow(dm)])
+  options(future.globals.maxSize = 1000 * 1024 ^ 2)
+  res<-future_lapply(chunks,function(chunksi){
+    t(exact_extract(predictors,
+                    dm[chunksi,],
+                    fun = function(values, coverage_fraction){
+                      colSums(as.matrix(values) * coverage_fraction,
+                              na.rm = TRUE) / sum(coverage_fraction)
+                    },
+                    force_df = FALSE,
+                    progress = TRUE))
+    #res<-t(res)
+  })
+  #plan(sequential)
+  res<-as.data.frame(do.call("rbind",res))
+
+  #dm<-cbind(dm,res)
+  #plot(dm["tmean"])
+  #plot(predictors$tmean)
+
+
+  ### Fill mesh where values are missing
+  xy<-st_coordinates(st_centroid(dm))
+  xy<-cbind(xy,res)
+  xynotna<-xy |> as.data.table() |> na.omit() |> as.matrix()
+  nn<-knnx.index(xynotna[,1:2],xy[,1:2],k=1)
+  res<-as.data.frame(xynotna[nn,-(1:2)])
+
+  #dm$tmean<-res2[,"elevation"]
+  #plot(dm["tmean"])
+
+  res[1:ncol(res)]<-lapply(res,scale)
+
+  trans<-as.matrix(res)^2
+  colnames(trans)<-paste0(colnames(trans),"2")
+  res<-cbind(res,as.data.frame(trans))
+  res<-res[,order(colnames(res))]
+
+
+  dmesh[["predictors"]]<-res
+  dmesh
+}

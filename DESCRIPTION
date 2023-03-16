@@ -1,0 +1,25 @@
+Package: ewlgcpSDM
+Title: Effort-Weighted Log Gaussian Cox Process Species Distribution Model
+Version: 0.0.0.1000
+Authors@R: 
+    person("Francçois", "Rousseu", , "Francois.Rousseu@usherbrooke.ca", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-2400-2479"))
+Description: Runs the effort-weighted Log Gaussian Cox Process model for modeling species' distributions
+License: `use_gpl3_license()`
+Depends:
+    R (>= 4.1.0),
+    INLA,
+    sp,
+    sf,
+    terra,
+    deldir,
+    Matrix,
+    parallel,
+    exactextractr,
+    foreach,
+    future,
+    future.apply,
+    data.table
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.2
