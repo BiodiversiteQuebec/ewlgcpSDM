@@ -67,6 +67,7 @@ dmesh_weights <- function(dmesh, region){
   }
   dmesh[["weights"]]<-weights
   dmesh[["dmeshcuts"]]<-dmeshcuts
+  dmesh[["id"]]<-dm$id
   dmesh
 
 }
