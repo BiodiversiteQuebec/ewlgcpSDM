@@ -4,7 +4,14 @@
 \alias{dmesh_effort}
 \title{Summarize effort to dual mesh}
 \usage{
-dmesh_effort(dmesh, obs, background, adjust = TRUE)
+dmesh_effort(
+  dmesh,
+  obs,
+  background,
+  adjust = TRUE,
+  buffer = NULL,
+  nsimeff = 20
+)
 }
 \arguments{
 \item{dmesh}{A dual mesh sf object}
@@ -14,6 +21,10 @@ dmesh_effort(dmesh, obs, background, adjust = TRUE)
 \item{background}{An sf data.frame with observations of the target group}
 
 \item{adjust}{Whether to adjust effort to be species-specific}
+
+\item{buffer}{A sf polygon to be used as a buffer around locations to prevent extrapolation outside of the species range. Dual mesh cells without any effort outside of this buffer will be assigned an effort value to force model predictions toward 0.}
+
+\item{nsimeff}{Effort value to assign to cells outside of the buffer (\code{integer} representing an umber of background observations).}
 
 \item{\dots}{Arguments passed to \code{inla}}
 }

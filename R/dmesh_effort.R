@@ -9,6 +9,8 @@
 #' @param obs An sf data.frame with observations of the target species
 #' @param background An sf data.frame with observations of the target group
 #' @param adjust Whether to adjust effort to be species-specific
+#' @param buffer A sf polygon to be used as a buffer around locations to prevent extrapolation outside of the species range. Dual mesh cells without any effort outside of this buffer will be assigned an effort value to force model predictions toward 0.
+#' @param nsimeff Effort value to assign to cells outside of the buffer (\code{integer} representing an umber of background observations).
 #' @param \dots Arguments passed to \code{inla}
 #'
 #'
@@ -28,14 +30,17 @@
 #' @export
 #'
 #'
-dmesh_effort<-function(dmesh,obs,background,adjust=TRUE){
+dmesh_effort<-function(dmesh,obs,background,adjust=TRUE,buffer=NULL, nsimeff=20){
 
   dm<-dmesh$dmesh
   nobs<-lengths(st_intersects(dm,obs))
   if(inherits(background,"SpatRaster")){
-    nbackground<-exact_extract(background,st_transform(dm,st_crs(background)),fun=function(values,coverage_fractions){
-      sum(values*coverage_fractions,na.rm=TRUE)/sum(coverage_fractions,na.rm=TRUE)
-    })
+    nbackground<-exact_extract(
+      background,st_transform(dm,st_crs(background)),
+      fun=function(values,coverage_fractions){
+        sum(values*coverage_fractions,na.rm=TRUE)/sum(coverage_fractions,na.rm=TRUE)
+      }
+    )
   }else{
     nbackground<-lengths(st_intersects(dm,background))
   }
@@ -43,6 +48,12 @@ dmesh_effort<-function(dmesh,obs,background,adjust=TRUE){
   if(any(miss)){
     nbackground[miss]<-0
   }
+
+  if(!is.null(buffer)){
+    o<-!as.logical(lengths(st_intersects(dmesh$dmesh,buff)))
+    nbackground<-ifelse(o & nbackground==0L,nsimeff,nbackground)
+  }
+
   dmesh[["effort"]]<-data.frame(nobs,nbackground)
   dmesh
   #nbobs<-obs[,.(nbobs=.N),by=dmesh]
