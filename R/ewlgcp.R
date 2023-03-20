@@ -98,16 +98,12 @@ ewlgcp <- function(formula, dmesh, effort = TRUE, adjust = FALSE, buffer = TRUE,
 
   #dmesh$areas<-as.numeric(st_area(dmesh))
   #dmesh$weights<-dmesh$areas
-  eff<-dmesh$effort$nbackground
-
-  if(adjust){
-    # adjust effort here for species specific
-  }
 
   if(effort){
-    k <- dmesh$weights > 0
-    e <- eff[k]
-    dmesh$weights[k]<-dmesh$weights[k] * ((e/dmesh$weights[k])/max(e/dmesh$weights[k]))
+    eff<-dmesh$effort$nbackgroundadjusted
+    k<-dmesh$weights > 0
+    e<-eff[k]
+    dmesh$weights[k]<-dmesh$weights[k]*((e/dmesh$weights[k])/max(e/dmesh$weights[k]))
   }
 
 
