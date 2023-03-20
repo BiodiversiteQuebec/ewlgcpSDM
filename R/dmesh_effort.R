@@ -32,9 +32,18 @@
 #'
 dmesh_effort<-function(dmesh,obs,background,adjust=FALSE,buffer=NULL, nsimeff=20){
 
+  # https://stats.stackexchange.com/questions/281162/scale-a-number-between-a-range
+  # rescale values to the a-b range
+  rescale_ab<-function(x,a,b){
+    ((x-min(x,na.rm=TRUE))/(max(x,na.rm=TRUE)-min(x,na.rm=TRUE)))*(b-a)+a
+  }
+
   dm<-dmesh$dmesh
   nobs<-lengths(st_intersects(dm,obs))
   if(inherits(background,"SpatRaster")){
+    if(adjust){
+      warning("Species-specific adjustments ignored when background is SpatRaster")
+    }
     nbackground<-exact_extract(
       background,st_transform(dm,st_crs(background)),
       fun=function(values,coverage_fractions){
@@ -49,40 +58,35 @@ dmesh_effort<-function(dmesh,obs,background,adjust=FALSE,buffer=NULL, nsimeff=20
     nbackground[miss]<-0
   }
 
-  if(adjust){ # to complete
-
+  if(adjust && inherits(background,"sf")){
     o<-st_intersects(background,dm)
     splist<-data.frame(species=background$species,id=dm$id[unlist(o)])
-    res<-aggregate(species~id,data=splist,fun=function(i){length(unique(i))})
-
+    res<-aggregate(species~id,
+                   data=splist,FUN=function(i){
+                     length(unique(i))
+                   }
+    )
+    nsp<-res$species[match(dm$id,res$id)]
+    nsp[is.na(nsp)]<-0
     pres<-as.integer(nobs>0)
-    vals<-nobs*scales::rescale(pres/nbsp,to=c(1,max(nbsp)^1))
+    vals<-nobs*rescale_ab(pres/nsp,a=1,b=max(nsp))
+    nbackgroundadjusted<-ifelse(is.nan(vals) | is.infinite(vals),0,vals)
+  }else{
+    nbackgroundadjusted<-nbackground
   }
-
-
 
   if(!is.null(buffer)){
-    o<-!as.logical(lengths(st_intersects(dmesh$dmesh,buff)))
-    nbackground<-ifelse(o & nbackground==0L,nsimeff,nbackground)
+    o<-!as.logical(lengths(st_intersects(dmesh$dmesh,buffer)))
+    nbackgroundadjusted<-ifelse(o & nbackgroundadjusted==0L,nsimeff,nbackgroundadjusted)
   }
 
-  dmesh[["effort"]]<-data.frame(nobs,nbackground)
-  dmesh
-  #nbobs<-obs[,.(nbobs=.N),by=dmesh]
-  #nbsp<-obs[,.(nbsp=length(unique(species))),by=.(dmesh)]
-  #dmesh$dmesh<-dmesh$id
-  #dmesh<-merge(dmesh,nbobs,all.x=TRUE)
-  #dmesh$nbobs[is.na(dmesh$nbobs)]<-0
-  #dmesh<-merge(dmesh,nbsp,all.x=TRUE)
-  #dmesh$nbsp[is.na(dmesh$nbsp)]<-0
+  if(adjust && inherits(background,"sf")){
+    eff<-data.frame(nobs,nbackground,pres,nsp,nbackgroundadjusted)
+  }else{
+    eff<-data.frame(nobs,nbackground,nbackgroundadjusted)
+  }
 
-  ### Species effort
-  #temp<-spobs[,.(spobs=.N),by=.(dmesh)]
-  #dmesh<-merge(dmesh,temp,all.x=TRUE)
-  #dmesh$spobs[is.na(dmesh$spobs)]<-0
-  #dmesh$pres<-as.integer(dmesh$spobs>0)
-  #vals<-dmesh$nbobs*scales::rescale(dmesh$pres/dmesh$nbsp,to=c(1,max(dmesh$nbsp)^1))
-  #vals<-ifelse(is.nan(vals) | is.infinite(vals),0,vals)
-  #dmesh$effoccs<-vals
+  dmesh[["effort"]]<-eff
+  dmesh
 
 }
