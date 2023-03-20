@@ -69,7 +69,7 @@ dmesh_effort<-function(dmesh,obs,background,adjust=FALSE,buffer=NULL, nsimeff=20
     nsp<-res$species[match(dm$id,res$id)]
     nsp[is.na(nsp)]<-0
     pres<-as.integer(nobs>0)
-    vals<-nobs*rescale_ab(pres/nsp,a=1,b=max(nsp))
+    vals<-nbackground*rescale_ab(pres/nsp,a=1,b=max(nsp))
     nbackgroundadjusted<-ifelse(is.nan(vals) | is.infinite(vals),0,vals)
   }else{
     nbackgroundadjusted<-nbackground
