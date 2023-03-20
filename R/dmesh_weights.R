@@ -43,7 +43,7 @@ dmesh_weights <- function(dmesh, region){
   dm<-dmesh$dmesh
 
   ### Calculate weight
-  dm$id <- 1:nrow(dm)
+  #dm$id <- 1:nrow(dm)
   weights <- numeric(nrow(dm))
   overlaps <- lengths(st_intersects(dm, region))
   within <- lengths(st_within(dm, region))
@@ -67,7 +67,6 @@ dmesh_weights <- function(dmesh, region){
   }
   dmesh[["weights"]]<-weights
   dmesh[["dmeshcuts"]]<-dmeshcuts
-  dmesh[["id"]]<-dm$id
   dmesh
 
 }

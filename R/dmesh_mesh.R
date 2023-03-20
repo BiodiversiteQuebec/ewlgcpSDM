@@ -86,5 +86,6 @@ dmesh_mesh <- function(mesh) {
     },future.seed=NULL) # disable warnings about rng
     dmesh<-do.call("rbind",pls)
     st_geometry(dmesh)<-"geometry"
+    dmesh$id<-1:nrow(dmesh)
     list(dmesh=dmesh,mesh=mesh)
 }

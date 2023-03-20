@@ -30,7 +30,7 @@
 #' @export
 #'
 #'
-dmesh_effort<-function(dmesh,obs,background,adjust=TRUE,buffer=NULL, nsimeff=20){
+dmesh_effort<-function(dmesh,obs,background,adjust=FALSE,buffer=NULL, nsimeff=20){
 
   dm<-dmesh$dmesh
   nobs<-lengths(st_intersects(dm,obs))
@@ -48,6 +48,18 @@ dmesh_effort<-function(dmesh,obs,background,adjust=TRUE,buffer=NULL, nsimeff=20)
   if(any(miss)){
     nbackground[miss]<-0
   }
+
+  if(adjust){ # to complete
+
+    o<-st_intersects(background,dm)
+    splist<-data.frame(species=background$species,id=dm$id[unlist(o)])
+    res<-aggregate(species~id,data=splist,fun=function(i){length(unique(i))})
+
+    pres<-as.integer(nobs>0)
+    vals<-nobs*scales::rescale(pres/nbsp,to=c(1,max(nbsp)^1))
+  }
+
+
 
   if(!is.null(buffer)){
     o<-!as.logical(lengths(st_intersects(dmesh$dmesh,buff)))
