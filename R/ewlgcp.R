@@ -59,14 +59,14 @@ ewlgcp <- function(formula, dmesh, effort = TRUE, adjust = FALSE, buffer = TRUE,
   #formula<-f
   #obs<-st_as_sf(spobs,coords=c("x","y"),crs=crsr)
   #explanaMesh<-explana
-  bpriors<-list(prec=list(default=1/(0.5)^2,Intercept=1/(20)^2),mean=list(default=0,Intercept=0))
-
 
   vars<-all.vars(formula[[3]])
 
   prior.range<-c(50,0.1)
   prior.sigma<-c(1,0.1)
-  prior.beta<-NULL
+  if(is.null(prior.beta)){
+    prior.beta<-list(prec=list(default=1/(0.5)^2,Intercept=1/(20)^2),mean=list(default=0,Intercept=0))
+  }
   smooth<-3/2
   num.threads<-1:1
   blas.num.threads<-1
@@ -187,7 +187,7 @@ ewlgcp <- function(formula, dmesh, effort = TRUE, adjust = FALSE, buffer = TRUE,
                 control.inla=list(strategy="adaptive",int.strategy="eb",huge=TRUE,
                                   control.vb=list(enable=TRUE, verbose=verbose)),
                 inla.mode="experimental",
-                control.fixed=bpriors,
+                control.fixed=prior.beta,
                 control.compute=list(config=TRUE,openmp.strategy="pardiso"),
                 verbose=verbose
   )
