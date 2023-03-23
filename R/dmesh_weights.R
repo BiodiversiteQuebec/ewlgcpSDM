@@ -52,7 +52,7 @@ dmesh_weights <- function(dmesh, region){
   within <- lengths(st_within(dm, region))
   o <- overlaps > 0L & !within > 0L
   suppressWarnings(
-    cuts <- st_intersection(region, dm[o, ])[,names(dm)]
+    cuts <- st_intersection(dm[o, ],region)[,names(dm)]
   )
   st_geometry(cuts)<-"geometry"
   dmeshcuts <- rbind(cuts, dm[within > 0L, ])
