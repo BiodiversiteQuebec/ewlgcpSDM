@@ -52,7 +52,7 @@
 #'
 #'
 #'
-ewlgcp <- function(formula, dmesh, effort = TRUE, adjust = FALSE, buffer = TRUE, orthogonal = TRUE, prior.beta = NULL, prior.range = NULL, prior.sigma = NULL, smooth = 2, ...) {
+ewlgcp <- function(formula, dmesh, effort = TRUE, adjust = FALSE, buffer = TRUE, orthogonal = TRUE, prior.beta = NULL, prior.range=c(50,0.1), prior.sigma=c(1,0.1), smooth = 3/2, ...) {
 
   ### Params
   #f<-formula(paste("y~",paste(vars,collapse="+")))
@@ -62,12 +62,9 @@ ewlgcp <- function(formula, dmesh, effort = TRUE, adjust = FALSE, buffer = TRUE,
 
   vars<-all.vars(formula[[3]])
 
-  prior.range<-c(50,0.1)
-  prior.sigma<-c(1,0.1)
   if(is.null(prior.beta)){
     prior.beta<-list(prec=list(default=1/(0.5)^2,Intercept=1/(20)^2),mean=list(default=0,Intercept=0))
   }
-  smooth<-3/2
   num.threads<-1:1
   blas.num.threads<-1
   control.inla<-list(strategy="adaptive",int.strategy="eb",huge=TRUE) # adaptive, eb
