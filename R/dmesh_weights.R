@@ -53,13 +53,15 @@ dmesh_weights <- function(dmesh, region){
   )
   st_geometry(cuts)<-"geometry"
   dmeshcuts <- rbind(cuts, dm[within > 0L, ])
-  dmeshcuts <- dmeshcuts[order(dmeshcuts$id), ]
-  w <- which(as.logical(overlaps))
-  areas <- as.numeric(st_area(dmeshcuts))
-  if(length(w)!=length(areas)){
-    stop("Number of resulting polygons different from the number of touching cells")
-  }
-  weights[w] <- areas
+  #dmeshcuts <- dmeshcuts[order(dmeshcuts$id), ]
+  #w <- which(as.logical(overlaps))
+  a <- as.numeric(st_area(dmeshcuts))
+  areas <- data.frame(id=dmeshcuts$id,area=a)
+  areas <- aggregate(area~id,data=areas,FUN=sum)
+  #if(length(w)!=length(areas)){
+  #  stop("Number of resulting polygons different from the number of touching cells")
+  #}
+  weights[areas$id] <- areas$area
 
   ### Check to make sure there are integration points with 0 weights
   if(all(weights > 0)){
