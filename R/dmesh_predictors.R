@@ -41,8 +41,10 @@ dmesh_predictors<-function(dmesh,predictors){
     t(exact_extract(predictors,
                     dm[chunksi,],
                     fun = function(values, coverage_fraction){
-                      colSums(as.matrix(values) * coverage_fraction,
-                              na.rm = TRUE) / sum(coverage_fraction)
+                      vals<-as.matrix(values)
+                      covs<-matrix(rep(coverage_fraction,ncol(values)),ncol=ncol(values))
+                      covs[is.na(vals)]<-NA
+                      colSums(vals*covs,na.rm=TRUE)/colSums(covs,na.rm=TRUE)
                     },
                     force_df = FALSE,
                     progress = TRUE))
