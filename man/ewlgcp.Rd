@@ -12,9 +12,9 @@ ewlgcp(
   buffer = TRUE,
   orthogonal = TRUE,
   prior.beta = NULL,
-  prior.range = NULL,
-  prior.sigma = NULL,
-  smooth = 2,
+  prior.range = c(50, 0.1),
+  prior.sigma = c(1, 0.1),
+  smooth = 3/2,
   ...
 )
 }
@@ -39,7 +39,7 @@ ewlgcp(
 
 \item{smooth}{x}
 
-\item{\dots}{x}
+\item{\dots}{Further arguments to pass to \code{inla}}
 }
 \value{
 A model of class \code{INLA}.

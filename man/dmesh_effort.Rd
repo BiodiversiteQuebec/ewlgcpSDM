@@ -8,7 +8,7 @@ dmesh_effort(
   dmesh,
   obs,
   background,
-  adjust = TRUE,
+  adjust = FALSE,
   buffer = NULL,
   nsimeff = 20
 )

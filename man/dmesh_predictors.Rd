@@ -9,7 +9,7 @@ dmesh_predictors(dmesh, predictors)
 \arguments{
 \item{dmesh}{A dual mesh}
 
-\item{predictors}{A SpatRaster with predictor values}
+\item{predictors}{A SpatRaster with predictor values. If processing in parallel, the SpatRastre needs to be wrapped using \link{\code{terra::wrap}}.}
 }
 \value{
 

@@ -6,7 +6,7 @@
 #' This function summarizes predictors to dual mesh. Predictors are assumed to be numerical values.
 #'
 #' @param dmesh A dual mesh
-#' @param predictors A SpatRaster with predictor values
+#' @param predictors A SpatRaster with predictor values. If processing in parallel, the SpatRastre needs to be wrapped using \link{\code{terra::wrap}}.
 #'
 #'
 #' @details
@@ -24,6 +24,7 @@
 #' @importFrom future nbrOfWorkers
 #' @importFrom future.apply future_apply
 #' @importFrom sf st_centroid st_coordinates st_transform st_crs
+#' @importFrom terra unwrap
 #' @importFrom data.table as.data.table
 #' @importFrom FNN knnx.index
 #'
@@ -35,6 +36,12 @@ dmesh_predictors<-function(dmesh,predictors){
   #plan(multicore,workers=5)
   dm<-st_transform(dmesh$dmesh,st_crs(predictors))
   cores<-nbrOfWorkers() # get nbr of workers from the chosen plan
+  if(cores>1){
+    if(!inherits(p,"PackedSpatRaster")){
+      stop("The SpatRaster of predictors needs to be wrapped for parallel processing. See ?terra::wrap.")
+    }
+    predictors<-unwrap(predictors)
+  }
   chunks <- split(1:nrow(dm), rep(1:cores, each=ceiling(nrow(dm)/cores))[1:nrow(dm)])
   options(future.globals.maxSize = 1000 * 1024 ^ 2)
   res<-future_lapply(chunks,function(chunksi){
