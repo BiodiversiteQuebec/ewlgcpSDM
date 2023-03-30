@@ -15,7 +15,7 @@
 #' @param prior.range x
 #' @param prior.sigma x
 #' @param smooth x
-#' @param \dots x
+#' @param \dots Further arguments to pass to \code{inla}
 #'
 #' @details
 #'
@@ -60,19 +60,54 @@ ewlgcp <- function(formula, dmesh, effort = TRUE, adjust = FALSE, buffer = TRUE,
   #obs<-st_as_sf(spobs,coords=c("x","y"),crs=crsr)
   #explanaMesh<-explana
 
+
+  #model.arguments<-as.list(environment())
+  dots<-list(...)
+
   vars<-all.vars(formula[[3]])
 
   if(is.null(prior.beta)){
-    prior.beta<-list(prec=list(default=1/(0.5)^2,Intercept=1/(20)^2),mean=list(default=0,Intercept=0))
+    prior.beta<-list(prec=list(default=1/(1)^2,Intercept=1/(20)^2),mean=list(default=0,Intercept=0))
   }
-  num.threads<-1:1
-  blas.num.threads<-1
-  control.inla<-list(strategy="adaptive",int.strategy="eb",huge=TRUE) # adaptive, eb
-  inla.mode<-"experimental"
-  control.fixed<-NULL
-  control.compute<-list(config=TRUE,openmp.strategy="pardiso.parallel")
-  verbose<-TRUE
 
+  inla.defaults<-list(
+    num.threads=2:2,
+    blas.num.threads=2,
+    control.inla=list(
+      strategy="adaptive",
+      int.strategy="eb",
+      huge=TRUE,
+      control.vb=list(
+        enable=TRUE,
+        verbose=TRUE
+      )
+    ),# adaptive, eb
+    inla.mode="experimental",
+    control.fixed=prior.beta,
+    control.compute=list(config=TRUE,openmp.strategy="pardiso"),
+    verbose=TRUE
+  )
+
+  inla.arguments<-c(dots,inla.defaults)
+  inla.arguments<-inla.arguments[!duplicated(names(inla.arguments))]
+
+
+
+  #miss<-which(!names(inla.arguments)%in%names(arguments))
+  #if(any(miss)){
+  #  arguments<-c(arguments,inla.arguments[w])
+  #}
+
+
+
+  #num.threads=2:2,
+  #blas.num.threads=2,
+  #control.inla=list(strategy="adaptive",int.strategy="eb",huge=TRUE,
+  #                  control.vb=list(enable=TRUE, verbose=verbose)),
+  #inla.mode="experimental",
+  #control.fixed=prior.beta,
+  #control.compute=list(config=TRUE,openmp.strategy="pardiso"),
+  #verbose=verbose
 
   #==============
   # Basic objects
@@ -170,25 +205,32 @@ ewlgcp <- function(formula, dmesh, effort = TRUE, adjust = FALSE, buffer = TRUE,
                              sep=" + "))
   }
 
-
-
-
-  verbose<-TRUE
-  model <- inla(formule,
-                family = "poisson",
-                data = inla.stack.data(Stack),
-                control.predictor = list(A = inla.stack.A(Stack),link = 1),
-                E = inla.stack.data(Stack)$e,
-                num.threads=2:2,
-                blas.num.threads=2,
-                control.inla=list(strategy="adaptive",int.strategy="eb",huge=TRUE,
-                                  control.vb=list(enable=TRUE, verbose=verbose)),
-                inla.mode="experimental",
-                control.fixed=prior.beta,
-                control.compute=list(config=TRUE,openmp.strategy="pardiso"),
-                verbose=verbose
+  model.arguments<-list(
+    formula=formule,
+    family = "poisson",
+    data = inla.stack.data(Stack),
+    control.predictor = list(A = inla.stack.A(Stack),link = 1),
+    E = inla.stack.data(Stack)$e
   )
 
+  #verbose<-TRUE
+  #model <- inla(formula = formule,
+  #              family = "poisson",
+  #              data = inla.stack.data(Stack),
+  #              control.predictor = list(A = inla.stack.A(Stack),link = 1),
+  #              E = inla.stack.data(Stack)$e,
+  #              num.threads=2:2,
+  #              blas.num.threads=2,
+  #              control.inla=list(strategy="adaptive",int.strategy="eb",huge=TRUE,
+  #                                control.vb=list(enable=TRUE, verbose=verbose)),
+  #              inla.mode="experimental",
+  #              control.fixed=prior.beta,
+  #              control.compute=list(config=TRUE,openmp.strategy="pardiso"),
+  #              verbose=verbose
+  #)
+
+
+  model<-do.call("inla",c(model.arguments,inla.arguments))
 
   nameRes <- names(model)
 
