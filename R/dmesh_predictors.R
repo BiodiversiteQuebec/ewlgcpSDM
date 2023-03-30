@@ -33,14 +33,16 @@
 #'
 #'
 dmesh_predictors<-function(dmesh,predictors){
-  #plan(multicore,workers=5)
-  dm<-st_transform(dmesh$dmesh,st_crs(predictors))
   cores<-nbrOfWorkers() # get nbr of workers from the chosen plan
   if(cores>1){
     if(!inherits(predictors,"PackedSpatRaster")){
       stop("The SpatRaster of predictors needs to be wrapped for parallel processing. See ?terra::wrap.")
     }
     predictors<-unwrap(predictors)
+  }
+  dm<-dmesh$dmesh
+  if(!identical(st_crs(dm),st_crs(predictors))){
+    stop("Dual mesh and predictors have different crs")
   }
   chunks <- split(1:nrow(dm), rep(1:cores, each=ceiling(nrow(dm)/cores))[1:nrow(dm)])
   options(future.globals.maxSize = 1000 * 1024 ^ 2)
