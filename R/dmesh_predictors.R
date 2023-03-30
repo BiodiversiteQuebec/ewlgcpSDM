@@ -37,7 +37,7 @@ dmesh_predictors<-function(dmesh,predictors){
   dm<-st_transform(dmesh$dmesh,st_crs(predictors))
   cores<-nbrOfWorkers() # get nbr of workers from the chosen plan
   if(cores>1){
-    if(!inherits(p,"PackedSpatRaster")){
+    if(!inherits(predictors,"PackedSpatRaster")){
       stop("The SpatRaster of predictors needs to be wrapped for parallel processing. See ?terra::wrap.")
     }
     predictors<-unwrap(predictors)
