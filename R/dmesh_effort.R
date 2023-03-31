@@ -83,7 +83,11 @@ dmesh_effort<-function(dmesh,obs,background,adjust=FALSE,buffer=NULL, nsimeff=20
   if(adjust && inherits(background,"sf")){
     eff<-data.frame(nobs,nbackground,pres,nsp,nbackgroundadjusted)
   }else{
-    eff<-data.frame(nobs,nbackground,nbackgroundadjusted)
+    if(!is.null(buffer)){
+      eff<-data.frame(nobs,nbackground,nbackgroundadjusted)
+    }else{
+      eff<-data.frame(nobs,nbackground)
+    }
   }
 
   dmesh[["effort"]]<-eff
