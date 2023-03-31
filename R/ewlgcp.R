@@ -52,7 +52,19 @@
 #'
 #'
 #'
-ewlgcp <- function(formula, dmesh, effort = TRUE, adjust = FALSE, buffer = TRUE, orthogonal = TRUE, prior.beta = NULL, prior.range=c(50,0.1), prior.sigma=c(1,0.1), smooth = 3/2, ...) {
+ewlgcp <- function(
+    formula,
+    dmesh,
+    effort = TRUE,
+    adjust = FALSE,
+    buffer = TRUE,
+    orthogonal = TRUE,
+    prior.beta = NULL,
+    prior.range=c(50,0.1),
+    prior.sigma=c(1,0.1),
+    smooth = 3/2,
+    ...
+){
 
   ### Params
   #f<-formula(paste("y~",paste(vars,collapse="+")))
@@ -131,8 +143,39 @@ ewlgcp <- function(formula, dmesh, effort = TRUE, adjust = FALSE, buffer = TRUE,
   #dmesh$areas<-as.numeric(st_area(dmesh))
   #dmesh$weights<-dmesh$areas
 
+  if((adjust || buffer) && !effort){
+    warning("When effort = FALSE, adjust and buffer are ignored")
+  }
+
   if(effort){
-    eff<-dmesh$effort$nbackgroundadjusted
+    if(adjust && buffer){
+      if(is.null(dmesh$effort$nbackgroundspadjustedwithbuff)){
+        stop("Missing effort info from output of dmesh_effort")
+      }else{
+        eff<-dmesh$effort$nbackgroundspadjustedwithbuff
+      }
+    }
+    if(adjust && !buffer){
+      if(is.null(dmesh$effort$nbackgroundspadjusted)){
+        stop("Missing effort info from output of dmesh_effort")
+      }else{
+        eff<-dmesh$effort$nbackgroundspadjusted
+      }
+    }
+    if(!adjust && !buffer){
+      if(is.null(dmesh$effort$nbackground)){
+        stop("Missing effort info from output of dmesh_effort")
+      }else{
+        eff<-dmesh$effort$nbackground
+      }
+    }
+    if(!adjust && buffer){
+      if(is.null(dmesh$effort$nbackgroundwithbuff)){
+        stop("Missing effort info from output of dmesh_effort")
+      }else{
+        eff<-dmesh$effort$nbackgroundwithbuff
+      }
+    }
     k<-dmesh$weights > 0
     e<-eff[k]
     dmesh$weights[k]<-dmesh$weights[k]*((e/dmesh$weights[k])/max(e/dmesh$weights[k]))
