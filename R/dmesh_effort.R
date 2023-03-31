@@ -30,7 +30,14 @@
 #' @export
 #'
 #'
-dmesh_effort<-function(dmesh,obs,background,adjust=FALSE,buffer=NULL, nsimeff=20){
+dmesh_effort<-function(
+    dmesh,
+    obs,
+    background,
+    adjust=FALSE,
+    buffer=NULL,
+    nsimeff=20
+){
 
   # https://stats.stackexchange.com/questions/281162/scale-a-number-between-a-range
   # rescale values to the a-b range
@@ -58,6 +65,10 @@ dmesh_effort<-function(dmesh,obs,background,adjust=FALSE,buffer=NULL, nsimeff=20
     nbackground[miss]<-0
   }
 
+  leff<-list()
+  leff[["nobs"]]<-nobs
+  leff[["nbackground"]]<-nbackground
+
   if(adjust && inherits(background,"sf")){
     o<-st_intersects(background,dm)
     splist<-data.frame(species=background$species,id=dm$id[unlist(o)])
@@ -70,27 +81,35 @@ dmesh_effort<-function(dmesh,obs,background,adjust=FALSE,buffer=NULL, nsimeff=20
     nsp[is.na(nsp)]<-0
     pres<-as.integer(nobs>0)
     vals<-nbackground*rescale_ab(pres/nsp,a=1,b=max(nsp))
-    nbackgroundadjusted<-ifelse(is.nan(vals) | is.infinite(vals),0,vals)
-  }else{
-    nbackgroundadjusted<-nbackground
+    nbackgroundspadjusted<-ifelse(is.nan(vals) | is.infinite(vals),0,vals)
+    leff[["nsp"]]<-nsp
+    leff[["pres"]]<-pres
+    leff[["nbackgroundspadjusted"]]<-nbackgroundspadjusted
   }
 
   if(!is.null(buffer)){
     o<-!as.logical(lengths(st_intersects(dmesh$dmesh,buffer)))
-    nbackgroundadjusted<-ifelse(o & nbackgroundadjusted==0L,nsimeff,nbackgroundadjusted)
-  }
-
-  if(adjust && inherits(background,"sf")){
-    eff<-data.frame(nobs,nbackground,pres,nsp,nbackgroundadjusted)
-  }else{
-    if(!is.null(buffer)){
-      eff<-data.frame(nobs,nbackground,nbackgroundadjusted)
-    }else{
-      eff<-data.frame(nobs,nbackground)
+    if(any("nbackground"==names(leff))){
+      leff[["nbackgroundwithbuff"]]<-ifelse(o & nbackground==0L,nsimeff,nbackground)
+    }
+    if(any("nbackgroundspadjusted"==names(leff))){
+      leff[["nbackgroundspadjustedwithbuff"]]<-ifelse(o & nbackgroundspadjusted==0L,nsimeff,nbackgroundspadjusted)
     }
   }
 
-  dmesh[["effort"]]<-eff
+  #if(adjust && inherits(background,"sf")){
+  #  eff<-data.frame(nobs,nbackground,pres,nsp,nbackgroundspadjusted)
+  #}else{
+  #  if(!is.null(buffer)){
+  #    eff<-data.frame(nobs,nbackground,nbackgroundspadjusted)
+  #  }else{
+  #    eff<-data.frame(nobs,nbackground)
+  #  }
+  #}
+
+  #eff<-data.frame(leff)
+
+  dmesh[["effort"]]<-data.frame(leff)
   dmesh
 
 }
