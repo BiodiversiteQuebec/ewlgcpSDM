@@ -5,30 +5,35 @@
 #' @description
 #' Runs the effort-weighted Log Gaussian Cox Process species distribution model
 #'
-#' @param formula A formula of the form \code{y ~ x1 + x2}.
-#' @param dmesh A dual mesh as a \code{MULTIPOLYGONS} \code{sf} object
+#' @param formula A formula of the form \code{y ~ x1 + x2 + ...}.
+#' @param dmesh A list with elements produced by the different \code{dmesh_} functions.
 #' @param effort Logical. Whether to adjust the model for effort. Default \code{TRUE}.
 #' @param adjust Logical. Whether to adjust the effort for being species specific. Default \code{TRUE}.
-#' @param buffer Logical. Whether to add a fictious effort to help reducing prediction outside of the species range. Default \code{TRUE}.
+#' @param buffer Logical. Whether to add the effort buffer to help reducing prediction outside of the species range. Default \code{TRUE}.
 #' @param orthogonal Logical. Whether to make the spatial field orthogonal to the predictors? Default \code{TRUE}.
-#' @param prior.beta x
-#' @param prior.range x
-#' @param prior.sigma x
+#' @param prior.beta Normal priors for the betas of the fixed effects coefficients as required by \code{INLA}. Default is \code{list(prec=list(default=1/(1)^2,Intercept=1/(20)^2),mean=list(default=0,Intercept=0))} which means a prior with \code{mean = 0} and \code{sd = 1} for all coefficients and a prior with \code{mean = 0} and \code{sd = 20} for the model intercept. See \code{\link{?control.fixed}}.
+#' @param prior.range Penalized complexity prior for the range of the spatial field. A vector of length two giving the probability that the range is inferior to a given value. The default is \code{prior.range = c(50, 0.01)} which represents a 1% chance that the range is inferior to 50 (in the units of the crs used).
+#' @param prior.sigma Penalized complexity prior for the standard deviation (sd) of the spatial field. A vector of length two giving the probability that the sd is superior to a given value. The default is \code{prior.sigma = c(1, 0.01)} which represents a 1% chance that the range is superior to 1.
 #' @param smooth x
 #' @param \dots Further arguments to pass to \code{inla}
 #'
 #' @details
+#' none
 #'
+#' @returns
+#' A model of class \code{INLA}.
 #'
-#' @returns A model of class \code{INLA}.
+#' @encoding
+#' UTF-8
 #'
 #' @references
-#' Simpson, D. Illian, J. B., Lindgren, F. Sørbye, S. H. and Rue, H. 2016. Going off grid: computationally efficient inference for log-Gaussian Cox processes. Biometrika, 103(1): 49-70 \url{https://doi.org/10.1093/biomet/asv064}
+#' Simpson, D. Illian, J. B., Lindgren, F. S\u00f8rbye, S. H. and Rue, H. 2016. Going off grid: computationally efficient inference for log-Gaussian Cox processes. Biometrika, 103(1): 49-70 \url{https://doi.org/10.1093/biomet/asv064}
 #'
+#' Fuglstad, G.-A., Simpson, D., Lindgren, F. & Rue, H. 2019 Constructing Priors that Penalize the Complexity of Gaussian Random Fields. Journal of the American Statistical Association, 114(525): 445-452 \url{https://doi.org/10.1080/01621459.2017.1415907}
 #'
 #' @examples
+#' none
 #'
-#' add(10, 1)
 #'
 #'
 #' @importFrom terra xyFromCell
@@ -56,7 +61,7 @@ ewlgcp <- function(
     formula,
     dmesh,
     effort = TRUE,
-    adjust = FALSE,
+    adjust = TRUE,
     buffer = TRUE,
     orthogonal = TRUE,
     prior.beta = NULL,

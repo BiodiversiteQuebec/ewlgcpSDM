@@ -20,14 +20,14 @@ map(model, dmesh, dims, region = NULL, sample = FALSE, nsamples = 100)
 \item{nsamples}{Integer. Number of samples to draw from the posterior. Ignored if \code{sample = FALSE}.}
 }
 \value{
-
+A terra raster with model predictions and uncertainty layers
 }
 \description{
 Constructs mean, standard deviation, and quantile (0.025, 0.5 and 0.975) maps for models calculated using \code{\link{uniSpace}} and \code{\link{ppSpace}}
 }
 \details{
-
+none
 }
 \references{
-
+none
 }

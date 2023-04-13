@@ -11,16 +11,16 @@
 #'
 #'
 #' @details
-#'
+#' none
 #'
 #' @return
-#'
+#' A list with element weights containing a vector of areas for each cell within the region area
 #'
 #' @references
-#'
+#' none
 #'
 #' @examples
-#'
+#' none
 #'
 #' @importFrom sf st_as_sf
 #' @importFrom sf st_intersects

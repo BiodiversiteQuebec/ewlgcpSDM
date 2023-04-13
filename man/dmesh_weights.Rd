@@ -12,18 +12,18 @@ dmesh_weights(dmesh, region)
 \item{region}{A region}
 }
 \value{
-
+A list with element weights containing a vector of areas for each cell within the region area
 }
 \description{
 Computes the dual mesh weights for the integration of the point process
 }
 \details{
-
+none
 }
 \examples{
-
+none
 
 }
 \references{
-
+none
 }

@@ -6,23 +6,35 @@
 #' This function summarizes effort to dual mesh.
 #'
 #' @param dmesh A dual mesh sf object
-#' @param obs An sf data.frame with observations of the target species
-#' @param background An sf data.frame with observations of the target group
-#' @param adjust Whether to adjust effort to be species-specific
+#' @param obs A sf spatial data.frame with observations of the target species
+#' @param background A sf data.frame with observations of the target group or a terra raster with the sum of observations of the target group for each pixel.
+#' @param adjust Whether to adjust effort to be species-specific. Default to \code{FALSE}. If \code{adjust = TRUE}, a column named \"species\" with species name must be present in the \code{background data.frame}. Currently ignored for when a species column is not given in \code{background} or when it is a raster.
 #' @param buffer A sf polygon to be used as a buffer around locations to prevent extrapolation outside of the species range. Dual mesh cells without any effort outside of this buffer will be assigned an effort value to force model predictions toward 0.
-#' @param nsimeff Effort value to assign to cells outside of the buffer (\code{integer} representing an umber of background observations).
+#' @param nsimeff Effort value to assign to cells outside of the buffer. An \code{integer} representing a number of background observations.
 #' @param \dots Arguments passed to \code{inla}
 #'
 #'
 #' @details
-#' Either points or a raster can be used. If a raster, empty cells will be filled with 0.
+#' Either an \code{sf} spatial object with points or a raster can be used. If a raster, empty cells will be filled with 0.
 #'
 #' @returns
+#' A list with element effort with a \code{data.frame} summarizing the number of observations and the various effort measures for each cell of the dual mesh.
+#'
+#' Depending on the options chosen, the \code{data.frame} will contain some or all of the following:
+#'
+#' \itemize{
+#'   \item\code{nobs}{ : number of observations}
+#'   \item\code{nbackground}{ : number of background observations from the target group}
+#'   \item\code{npres}{ : whether the species is present in a cell or not (1 = present, 0 = absent)}
+#'   \item\code{nsp}{ : number of species in a cell}
+#'   \item\code{nbackgroundwithbuff}{ : nbackground to which fictious observations have been added using the effort buffer}
+#'   \item\code{nbackgroundspadjusted}{ : nbackground with species-specific adjustment}
+#'   \item\code{nbackgroundspadjustedwithbuff}{ : nbackground with species-specific adjustment and to which fictious observations have been added using the effort buffer}
+
+#' }
 #'
 #' @references
 #' Simpson, D. Illian, J. B., Lindgren, F. Sørbye, S. H. and Rue, H. 2016. Going off grid: computationally efficient inference for log-Gaussian Cox processes. Biometrika, 103(1): 49-70 \url{https://doi.org/10.1093/biomet/asv064}
-#'
-#' @keywords
 #'
 #' @importFrom sf st_intersects st_transform st_crs
 #' @importFrom exactextractr exact_extract

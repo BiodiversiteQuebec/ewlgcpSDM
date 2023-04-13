@@ -12,7 +12,7 @@ dmesh_predictors(dmesh, predictors)
 \item{predictors}{A SpatRaster with predictor values. If processing in parallel, the SpatRastre needs to be wrapped using \link{\code{terra::wrap}}.}
 }
 \value{
-
+A list to which an element predictors is added with a \code{data.frame} of predictor values.
 }
 \description{
 This function summarizes predictors to dual mesh. Predictors are assumed to be numerical values.
@@ -23,6 +23,6 @@ Parallelization can be enabled by choosing a plan from the future package and th
 When the predictors do not cover the extent of the dual mesh, empty cells will be filled with the value of the nearest neighbour cell.
 }
 \examples{
-
+none
 
 }

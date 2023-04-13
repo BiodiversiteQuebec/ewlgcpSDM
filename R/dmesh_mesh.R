@@ -12,9 +12,10 @@
 #' Parallelization can be enabled by choosing a plan from the future package and the mesh will be splitted in chunks detemined by the number of workers. Don't forget to reset the plan to sequential when done.
 #'
 #' @returns
-#' An sf MULTIPOLYGON object with the dual mesh polygons
+#' A dual mesh as a \code{sf} \code{MULTIPOLYGONS} object
 #'
 #' @examples
+#' none
 #'
 #' @importFrom future.apply future_lapply
 #' @importFrom future nbrOfWorkers

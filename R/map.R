@@ -10,10 +10,13 @@
 #' @param nsamples Integer. Number of samples to draw from the posterior. Ignored if \code{sample = FALSE}.
 #'
 #' @details
+#' none
 #'
 #' @returns
+#' A terra raster with model predictions and uncertainty layers
 #'
 #' @references
+#' none
 #'
 #' @importFrom INLA inla.mesh.projector
 #' @importFrom INLA inla.mesh.project
