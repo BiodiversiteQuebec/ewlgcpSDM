@@ -41,7 +41,7 @@ dmesh_predictors<-function(dmesh,predictors){
     predictors<-unwrap(predictors)
   }
   dm<-dmesh$dmesh
-  if(!identical(st_crs(dm),st_crs(predictors))){
+  if(!(st_crs(dm)==st_crs(predictors))){
     stop("Dual mesh and predictors have different crs")
   }
   chunks <- split(1:nrow(dm), rep(1:cores, each=ceiling(nrow(dm)/cores))[1:nrow(dm)])
