@@ -16,9 +16,9 @@ dmesh_effort(
 \arguments{
 \item{dmesh}{A dual mesh sf object}
 
-\item{obs}{An sf spatial data.frame with observations of the target species}
+\item{obs}{A sf spatial data.frame with observations of the target species}
 
-\item{background}{An sf data.frame with observations of the target group or a terra raster with the sum of observations of the target group for each pixel.}
+\item{background}{A sf data.frame with observations of the target group or a terra raster with the sum of observations of the target group for each pixel.}
 
 \item{adjust}{Whether to adjust effort to be species-specific. Default to \code{FALSE}. If \code{adjust = TRUE}, a column named \"species\" with species name must be present in the \code{background data.frame}. Currently ignored for when a species column is not given in \code{background} or when it is a raster.}
 

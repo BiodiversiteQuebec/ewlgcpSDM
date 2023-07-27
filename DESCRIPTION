@@ -2,8 +2,18 @@ Package: ewlgcpSDM
 Title: Effort-Weighted Log Gaussian Cox Process Species Distribution Model
 Version: 0.0.0.1000
 Authors@R: 
-    person("Francçois", "Rousseu", , "Francois.Rousseu@usherbrooke.ca", role = c("aut", "cre"),
-           comment = c(ORCID = "0000-0002-2400-2479"))
+    c(
+      person(given = "Guillaume",
+             family = "Blanchet",
+             role = c("aut"),
+             email = "guillaume.blanchet@usherbrooke.ca",
+             comment = c(ORCID = "0000-0001-5149-2488")),
+      person(given = "François", 
+             family = "Rousseu", 
+             email = "francois.rousseu@usherbrooke.ca",
+             role = c("aut", "cre"),
+             comment = c(ORCID = "0000-0002-2400-2479"))
+      )
 Description: Runs the effort-weighted Log Gaussian Cox Process model for modeling species' distributions
 License: `use_gpl3_license()`
 Depends:
@@ -23,3 +33,7 @@ Depends:
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
