@@ -89,7 +89,7 @@ ewlgcp <- function(
 
   inla.defaults<-list(
     num.threads=2:2,
-    blas.num.threads=2,
+    #blas.num.threads=2,
     control.inla=list(
       strategy="adaptive",
       int.strategy="eb",
