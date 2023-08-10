@@ -44,13 +44,13 @@ map <- function(model, dmesh, dims, region = NULL, sample = FALSE, nsamples = 10
   if(is.null(region)){
     mapBasis <- inla.mesh.projector(dmesh$mesh,
                                     dims = dims,
-                                    crs = dmesh$mesh$crs$crs)
+                                    crs = dmesh$mesh$crs)
   }else{
     mapBasis <- inla.mesh.projector(dmesh$mesh,
                                     dims = dims,
                                     xlim = st_bbox(region)[c(1,3)],
                                     ylim = st_bbox(region)[c(2,4)],
-                                    crs = dmesh$mesh$crs$crs)
+                                    crs = dmesh$mesh$crs)
   }
 
 
@@ -95,7 +95,7 @@ map <- function(model, dmesh, dims, region = NULL, sample = FALSE, nsamples = 10
     i[,ncol(i):1]
   })
   a<-simplify2array(a)
-  mapRaster<-rast(a[,,dim(a)[3]:1]) # uses terra for now
+  mapRaster<-rast(a[,,dim(a)[3]:1], crs = dmesh$mesh$crs$wkt) # uses terra for now
   ext(mapRaster)<-c(xmin = min(mapBasis$x), xmax = max(mapBasis$x),ymin = min(mapBasis$y), ymax = max(mapBasis$y))
   names(mapRaster)<-c(valsPred,paste0("link",valsLink),paste0("space",valsSpat),valsSamp)
   mapRaster
