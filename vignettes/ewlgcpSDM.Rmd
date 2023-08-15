@@ -12,7 +12,10 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   tidy = TRUE,
-  tidy.opts = list(width.cutoff = 60)
+  tidy.opts = list(width.cutoff = 70)
+)
+knitr::opts_knit$set(
+  global.par = TRUE
 )
 ```
 
@@ -65,11 +68,14 @@ region<-st_union(region) |> st_as_sf()
 lakes<-ne_download(scale="medium",type="lakes",destdir=getwd(),category="physical",returnclass="sf") |> st_transform(32618)
 lakes<-st_filter(lakes,region)
 
-par(mar=c(0,0,0,0))
-plot(st_geometry(qc),col="lemonchiffon2")
-plot(st_geometry(region),add=TRUE)
-plot(st_geometry(lakes),col="white",add=TRUE)
 
+plotQC<-function(){ # plotting function for the study area
+  par(mar=c(0,0,0,0))
+  plot(st_geometry(qc),col="lemonchiffon2")
+  plot(st_geometry(region),add=TRUE)
+  plot(st_geometry(lakes),col="white",add=TRUE)
+}
+plotQC()
 ```
 
 ## Get observations
@@ -88,7 +94,8 @@ if(any(rem)){
 }
 obs<-st_as_sf(as.data.frame(obs),coords=c("decimalLongitude","decimalLatitude"),crs=4326)
 obs<-st_transform(obs,st_crs(region))
-plot(st_geometry(region))
+
+plotQC()
 plot(st_geometry(obs),add=TRUE)
 
 ```
@@ -118,7 +125,7 @@ gbif<-rast("https://object-arbutus.cloud.computecanada.ca/bq-io/io/gbif_heatmaps
 gbif<-crop(gbif,vect(st_buffer(st_transform(region,4326),1)))
 gbif<-mask(gbif,vect(st_buffer(st_transform(region,4326),1)))
 gbif<-subst(gbif,NA,0) # replace NAs with 0
-plot(log(aggregate(gbif,10,fun=sum)))
+plot(log(aggregate(gbif,10,fun=sum)),axes=FALSE)
 plot(st_geometry(st_transform(st_transform(region,4326))),add=TRUE)
 ```
 
@@ -181,21 +188,13 @@ mesh <- inla.mesh.2d(loc.domain = NULL,
                      min.angle = 21,
                      cutoff = edge/1,
                      offset = c(edge,edge*3),
-                     boundary = domain,#inla.mesh.segment(domain$loc),
+                     boundary = domain,#inla.mesh.segment(domainloc),
                      crs = st_crs(region))
 ```
 
-### Delineate buffer
-
-To avoid predicting high relative abundances in areas where the species is not found, we create a 500 km buffer around locations outside of which we will add a fake effort suggesting that the species was not found. This buffer is optional and these values are arbitrary and can be adapted to specific situations. 
-```{r}
-buff<-st_buffer(obs,500000) |> st_union()
-plot(st_geometry(buff))
-plot(st_geometry(region),add=TRUE)
-plot(st_geometry(obs),add=TRUE)
-```
-
 ### Create dual mesh
+
+From an INLA mesh, we create a dual mesh. We will add each subsequent element to the `params` object which is a list of objects required for modeling.
 ```{r}
 
 #plan(multicore,workers=3)
@@ -203,30 +202,45 @@ params<-dmesh_mesh(mesh)
 ```
 
 ### Compute weights
+
+This will compute the weight for each cell of the dual mesh (related to area).
 ```{r}
 params<-dmesh_weights(params,region)
 ```
 
 ### Summarize predictors
-```{r}
+
+Next, we will summarize the predictors for each cell of the dual mesh. The values will also be scaled for modeling.
+```{r, message = FALSE, warning = FALSE, results='hide'}
 
 params<-dmesh_predictors(params,predictors)
+
+dm<-params$dmesh
+dm$deciduous<-params$predictors$deciduous
+plot(dm[,"deciduous"],border=NA,nbreaks=100,pal=function(x){rev(terrain.colors(x))},reset=FALSE,key.pos=NULL)
+plot(st_geometry(qc),border=adjustcolor("black",0.25),add=TRUE)
+plot(st_geometry(lakes),col="white",border=adjustcolor("black",0.25),add=TRUE)
+
 ```
 
 ### Summarize observations and effort
+
+Before summarizing observations, we will first create a 500 km buffer around locations outside of which we will add a fictious effort suggesting that the species was not found. This is to avoid predicting high relative abundances in areas where the species is not found. This buffer is optional and these values are arbitrary and can be adapted to specific situations. 
+```{r}
+buff<-st_buffer(obs,500000) |> st_union()
+plotQC()
+plot(st_geometry(buff),add=TRUE)
+plot(st_geometry(obs),add=TRUE)
+```
+
+We can then sum for each cell of the dual mesh observations of the species and of the background.
 ```{r}
 
 params<-dmesh_effort(params,obs=obs,background=bg,buffer=buff,adjust=FALSE)
 ```
 
-```{r, echo = FALSE, include = FALSE}
-dm<-params$dmesh
-dm$deciduous<-params$predictors$deciduous
-plot(dm[,"deciduous"],border=NA,nbreaks=100)
-```
 
-
-### Run model
+## Run model
 
 The model can now be ran. Here, we will fix the standard deviation of the spatial effect to a very low value which is equivalent to removing the spatial component from the model. The model becomes a simple inhomogeneous point process weighted for effort.
 ```{r}
@@ -260,6 +274,8 @@ m<-ewlgcp(
 ```
 
 ## Map results
+
+The `map` function will produce an intensity raster along with the different uncertainty measures and the spatial component.
 ```{r}
 sdm<-ewlgcpSDM::map(model=m,
                     dmesh=params,
@@ -267,18 +283,27 @@ sdm<-ewlgcpSDM::map(model=m,
                     region = region
 )
 
-sdm<-mask(sdm,vect(na))
-crs(sdm)<-crs(na)
+sdm<-mask(sdm,vect(region))
+crs(sdm)<-crs(region)
 ```
 
-
+We can finally map the intensity (sdm) along with the uncertainty on the link scale.
 ```{r}
-plot(mask(sdm$mean,vect(region)))
-plot(st_geometry(qc),add=TRUE)
-plot(st_geometry(lakes),col="white",border=NA,add=TRUE)
-plot(st_geometry(obs),add=TRUE)
 
-plot(st_geometry(buff),add=TRUE)
+add_shp<-function(){
+  plot(st_geometry(qc),border=adjustcolor("black",0.25),add=TRUE)
+  plot(st_geometry(lakes),col="white",border=NA,add=TRUE)
+  plot(st_geometry(obs),cex=0.1,add=TRUE)
+}
+
+plg<-list(size=c(1,0.5),cex=0.75,adj=c(10,10))
+
+par(mfrow=c(1,2),mar=c(0,0,0,0))
+plot(sdm$mean,main="Intensity",axes=F,plg=plg)
+add_shp()
+plot(sdm$linksd,main="SD on the link scale",axes=F,plg=plg)
+add_shp()
+
 ```
 
 
