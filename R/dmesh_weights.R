@@ -49,7 +49,8 @@ dmesh_weights <- function(dmesh, region){
   #dm$id <- 1:nrow(dm)
   weights <- numeric(nrow(dm))
   overlaps <- lengths(st_intersects(dm, region))
-  within <- lengths(st_within(dm, region))
+  #within <- lengths(st_within(dm, region))
+  within <- as.integer((1:nrow(dm))%in%(st_contains(region, dm)[[1]])) # much faster than the previous line https://github.com/r-spatial/sf/issues/1261
   o <- overlaps > 0L & !within > 0L
   suppressWarnings(
     cuts <- st_intersection(dm[o, ],region)[,names(dm)]
