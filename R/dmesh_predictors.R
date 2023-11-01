@@ -76,7 +76,7 @@ dmesh_predictors<-function(dmesh,predictors){
   xy<-cbind(xy,res)
   xynotna<-xy |> as.data.table() |> na.omit() |> as.matrix()
   nn<-knnx.index(xynotna[,1:2],xy[,1:2],k=1)
-  res<-as.data.frame(xynotna[nn,-(1:2)])
+  res<-as.data.frame(xynotna[nn,-(1:2),drop=FALSE])
 
   #dm$tmean<-res2[,"elevation"]
   #plot(dm["tmean"])
