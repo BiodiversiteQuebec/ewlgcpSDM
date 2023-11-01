@@ -47,17 +47,21 @@ dmesh_predictors<-function(dmesh,predictors){
   chunks <- split(1:nrow(dm), rep(1:cores, each=ceiling(nrow(dm)/cores))[1:nrow(dm)])
   options(future.globals.maxSize = 1000 * 1024 ^ 2)
   res<-future_lapply(chunks,function(chunksi){
-    t(exact_extract(predictors,
+    res<-exact_extract(predictors,
                     dm[chunksi,],
                     fun = function(values, coverage_fraction){
                       vals<-as.matrix(values)
-                      covs<-matrix(rep(coverage_fraction,ncol(values)),ncol=ncol(values))
+                      covs<-matrix(rep(coverage_fraction,ncol(vals)),ncol=ncol(vals))
                       covs[is.na(vals)]<-NA
                       colSums(vals*covs,na.rm=TRUE)/colSums(covs,na.rm=TRUE)
                     },
                     force_df = FALSE,
-                    progress = TRUE))
-    #res<-t(res)
+                    progress = TRUE)
+    if(is.null(dim(res))){
+      res<-matrix(res,nrow=1)
+      dimnames(res)[[1]]<-names(predictors)
+    }
+    t(res)
   })
   #plan(sequential)
   res<-as.data.frame(do.call("rbind",res))
