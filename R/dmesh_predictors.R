@@ -80,9 +80,13 @@ dmesh_predictors<-function(dmesh,predictors){
 
   #dm$tmean<-res2[,"elevation"]
   #plot(dm["tmean"])
-
-  res[1:ncol(res)]<-lapply(res,scale)
-
+  
+  ### do not scale dummy variables that don't vary
+  w<-which(apply(res,2,sd)!=0)
+  if(any(w)){
+    res[w]<-lapply(res[w],scale)
+  }
+  
   trans<-as.matrix(res)^2
   colnames(trans)<-paste0(colnames(trans),"2")
   res<-cbind(res,as.data.frame(trans))
