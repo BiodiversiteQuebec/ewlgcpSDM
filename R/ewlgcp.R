@@ -289,7 +289,7 @@ ewlgcp <- function(
   #=============
 
   attributes(model) <- list(formula = formula,
-                            obs = obs,
+                            obs = dmesh$effort,
                             XEst = XEst,
                             XPred = XPred,
                             meshSpace = dmesh$mesh,
