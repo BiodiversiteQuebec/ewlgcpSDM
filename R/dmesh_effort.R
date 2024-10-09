@@ -120,8 +120,13 @@ dmesh_effort<-function(
   #}
 
   #eff<-data.frame(leff)
-
-  dmesh[["effort"]]<-data.frame(leff)
+  
+  ### Anything that's outside the region needs to have no effort #########
+  w <- which(dmesh$weights == 0)
+  eff <- data.frame(leff)
+  eff[w, ] <- 0
+  
+  dmesh[["effort"]] <- eff
   dmesh
 
 }
