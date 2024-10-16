@@ -1,0 +1,9 @@
+pandoc: '3.2'
+pkgdown: 2.1.1
+pkgdown_sha: ~
+articles:
+  ewlgcpSDM: ewlgcpSDM.html
+last_built: 2024-10-16T22:40Z
+urls:
+  reference: https://biodiversitequebec.github.io/ewlgcpSDM/reference
+  article: https://biodiversitequebec.github.io/ewlgcpSDM/articles
