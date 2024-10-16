@@ -22,7 +22,3 @@ Parallelization can be enabled by choosing a plan from the future package and th
 
 When the predictors do not cover the extent of the dual mesh, empty cells will be filled with the value of the nearest neighbour cell.
 }
-\examples{
-none
-
-}

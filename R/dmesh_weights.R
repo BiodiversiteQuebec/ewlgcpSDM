@@ -19,8 +19,6 @@
 #' @references
 #' none
 #'
-#' @examples
-#' none
 #'
 #' @importFrom sf st_as_sf
 #' @importFrom sf st_intersects

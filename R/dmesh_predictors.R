@@ -17,8 +17,6 @@
 #' @returns
 #' A list to which an element predictors is added with a \code{data.frame} of predictor values.
 #'
-#' @examples
-#' none
 #'
 #' @importFrom exactextractr exact_extract
 #' @importFrom future nbrOfWorkers

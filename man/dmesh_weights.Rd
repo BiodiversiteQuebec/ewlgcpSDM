@@ -20,10 +20,6 @@ Computes the dual mesh weights for the integration of the point process
 \details{
 none
 }
-\examples{
-none
-
-}
 \references{
 none
 }

@@ -14,8 +14,7 @@
 #' @returns
 #' A dual mesh as a \code{sf} \code{MULTIPOLYGONS} object
 #'
-#' @examples
-#' none
+#'
 #'
 #' @importFrom future.apply future_lapply
 #' @importFrom future nbrOfWorkers

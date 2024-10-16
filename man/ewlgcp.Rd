@@ -51,12 +51,6 @@ Runs the effort-weighted Log Gaussian Cox Process species distribution model
 \details{
 none
 }
-\examples{
-none
-
-
-
-}
 \references{
 Simpson, D. Illian, J. B., Lindgren, F. S\u00f8rbye, S. H. and Rue, H. 2016. Going off grid: computationally efficient inference for log-Gaussian Cox processes. Biometrika, 103(1): 49-70 \url{https://doi.org/10.1093/biomet/asv064}
 

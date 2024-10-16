@@ -18,7 +18,3 @@ This function constructs a dual mesh from the standard INLA mesh.
 \details{
 Parallelization can be enabled by choosing a plan from the future package and the mesh will be splitted in chunks detemined by the number of workers. Don't forget to reset the plan to sequential when done.
 }
-\examples{
-none
-
-}

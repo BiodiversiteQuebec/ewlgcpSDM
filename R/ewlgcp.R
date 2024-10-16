@@ -31,9 +31,6 @@
 #'
 #' Fuglstad, G.-A., Simpson, D., Lindgren, F. & Rue, H. 2019 Constructing Priors that Penalize the Complexity of Gaussian Random Fields. Journal of the American Statistical Association, 114(525): 445-452 \url{https://doi.org/10.1080/01621459.2017.1415907}
 #'
-#' @examples
-#' none
-#'
 #'
 #'
 #' @importFrom terra xyFromCell
