@@ -13,7 +13,7 @@ install.packages("INLA",repos=c(getOption("repos"),INLA="https://inla.r-inla-dow
 
 Then, ewlgcpSDM can be installed directly from GitHub like this:
 ```r
-remotes::install_github("frousseu/ewlgcpSDM")
+remotes::install_github("BiodiversiteQuebec/ewlgcpSDM")
 ```
 
 ## References
