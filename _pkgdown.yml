@@ -1,4 +1,6 @@
 url: https://biodiversitequebec.github.io/ewlgcpSDM/
 template:
   bootstrap: 5
+toc:
+  depth: 2
 
