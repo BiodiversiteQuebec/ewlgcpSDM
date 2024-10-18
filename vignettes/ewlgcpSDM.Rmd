@@ -51,8 +51,7 @@ na<-rbind(can,usa)
 na<-st_transform(na,32618)
 
 # keep Québec and bordering provinces/states as a buffer
-region<-na[na$NAME_1%in%c("Québec","New Brunswick","Maine","Vermont","New Hampshire","New York","Ontario"),]
-
+region <- na[na$NAME_1%in%c("Québec","New Brunswick","Maine","Vermont","New Hampshire","New York","Ontario"),]
 # split NF into different polygons
 labrador<-ms_explode(na[na$NAME_1%in%c("Newfoundland and Labrador"),]) 
 labrador<-labrador[which.max(st_area(labrador)),] # keep Labarador
@@ -60,7 +59,7 @@ region<-rbind(region,labrador)
 qc<-ms_simplify(region,0.01)
 
 # Add it to the study region
-region<-rbind(region,labrador) 
+#region<-rbind(region,labrador) 
 
 # Simplify polygons to make things faster
 region<-ms_simplify(region,0.005)
@@ -181,7 +180,7 @@ domain <- inla.nonconvex.hull(st_coordinates(domain),convex = -0.015,resolution=
 
 We then create the INLA mesh over the study area. We use a coarse resolution for the mesh edges corresponding to approximately 1% of the study area diameter and a relatively large outer area for reducing edge effects. See [virgilio]() for advices on creating a good mesh.
 ```{r}
-pedge<-0.005
+pedge<-0.01
 edge<-min(c(diff(st_bbox(region)[c(1,3)])*pedge,diff(st_bbox(region)[c(2,4)])*pedge))
 edge
 
@@ -240,41 +239,6 @@ We can then sum for each cell of the dual mesh observations of the species and o
 
 params<-dmesh_effort(params,obs=obs,background=bg,buffer=buff,adjust=FALSE)
 
-#w <- which((params$effort$nobs == params$effort$nbackground) & (params$effort$nobs > 0))
-#params$effort[w, 2:3] <- params$effort[w, 2:3] * 500
-#hist(params$effort$nobs / params$effort$nbackground, breaks = 50)
-
-#w <- which(params$weights == 0)
-#params$effort[w, ] <- 0
-
-#w <- which(params$effort$nbackground > 0)
-#params$effort[w, 2:3] <- params$effort[w, 1]
-
-#plot(sdm$mean)
-#plot(st_geometry(params$dmesh),add=T)
-#text(st_coordinates(st_centroid(params$dmesh)), label = 1:nrow(params$dmesh), cex = 0.5)
-
-#params$effort[c(30, 139),]
-
-#source("https://raw.githubusercontent.com/frousseu/FRutils/refs/heads/master/R/colo.scale.R")
-#par(mar=c(0,0,0,0))
-#plot(st_geometry(params$dmesh), col = colo.scale(params$effort$nobs / params$effort$nbackground, c("gold", "forestgreen")))
-#plot(st_geometry(params$dmesh), col = colo.scale(ifelse(params$weights > 0, params$weights, NA), c("gold", "forestgreen")))
-#plot(st_geometry(region), add = TRUE)
-
-
-#plot(st_geometry(region), add = TRUE)
-#plot(st_geometry(params$dmesh), add = TRUE)
-
-#mapview(region) + mapview(params$dmesh)
-
-#plot(sdm$mean)
-#plot(st_geometry(region), border = "red", lwd = 1, add = T)
-#plot(st_geometry(params$dmeshcuts), border = "red", add = T)
-#plot(mesh, add = T)
-
-
-
 ```
 
 
@@ -294,7 +258,6 @@ m<-ewlgcp(
   prior.sigma = c(0.00001, NA),
   smooth = 2,
   num.threads=2:2,
-  #blas.num.threads=2,
   control.inla=list(
     strategy="adaptive", # "adaptive"
     int.strategy="eb", # "eb"
@@ -342,30 +305,6 @@ add_shp()
 plot(sdm$linksd,main="SD on the link scale",axes=F,plg=plg,mar=c(0,0,0,3))
 add_shp()
 par(mfrow=c(1, 1),mar=c(4, 4, 3, 3))
-
-
-#plot(exp(sdm$linkmean-sdm$spacemean))
-#plot(mask(exp(sdm$linkmean-sdm$spacemean), vect(region)))
-#plot(sdm$spacemean)
-#plot(sdm$mean)
-
-#source("https://raw.githubusercontent.com/frousseu/FRutils/refs/heads/master/R/colo.scale.R")
-#par(mfrow = c(1, 2), mar=c(0,0,0,0))
-#plot(sdm$spacemean, mar = c(0, 0, 0, 0))
-#plot(st_geometry(region), add = TRUE)
-#rat <- params$effort$nobs / params$effort$nbackground
-#rat <- ifelse(rat == 0, NA, rat)
-#plot(st_geometry(params$dmesh), border = NA, col = colo.scale(rat, c("gold", "forestgreen")))
-#plot(st_geometry(region), add = TRUE)
-
-
-#e <- extract(sdm$mean, params$dmesh, fun = mean, na.rm = T) 
-#plot(e[, 2], params$effort$nobs / params$effort$nbackground) 
-
-#r2 <- sdm$mean
-#r2 <- exp(sdm$linkmean-sdm$spacemean)
-#plot(c(r1, r2), range = range(global(c(r1, r2), "range", na.rm = T)), mar = c(0, 0, 0, 7))
-#plot(r2-r1, col = colo.scale(sort(unique(values(r2-r1)[,1])), c("blue","white","red"), center = TRUE))
 
 ```
 
