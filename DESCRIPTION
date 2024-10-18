@@ -37,4 +37,5 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
-URL: https://biodiversitequebec.github.io/ewlgcpSDM/
+URL: https://biodiversitequebec.github.io/ewlgcpSDM/, https://github.com/BiodiversiteQuebec/ewlgcpSDM
+BugReports: https://github.com/BiodiversiteQuebec/ewlgcpSDM/issues
