@@ -36,6 +36,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/BiodiversiteQuebec/ewlgcpSDM/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
@@ -52,7 +53,7 @@
       <h1>ewlgcpSDM</h1>
             
       
-
+      <small class="dont-index">Source: <a href="https://github.com/BiodiversiteQuebec/ewlgcpSDM/blob/HEAD/vignettes/ewlgcpSDM.Rmd" class="external-link"><code>vignettes/ewlgcpSDM.Rmd</code></a></small>
       <div class="d-none name"><code>ewlgcpSDM.Rmd</code></div>
     </div>
 
@@ -93,7 +94,6 @@ help with the mapping later.</p>
 <span><span class="co"># keep Québec and bordering provinces/states as a buffer</span></span>
 <span><span class="va">region</span> <span class="op">&lt;-</span> <span class="va">na</span><span class="op">[</span><span class="va">na</span><span class="op">$</span><span class="va">NAME_1</span> <span class="op"><a href="https://rspatial.github.io/terra/reference/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Québec"</span>, <span class="st">"New Brunswick"</span>, <span class="st">"Maine"</span>, <span class="st">"Vermont"</span>,</span>
 <span>    <span class="st">"New Hampshire"</span>, <span class="st">"New York"</span>, <span class="st">"Ontario"</span><span class="op">)</span>, <span class="op">]</span></span>
-<span></span>
 <span><span class="co"># split NF into different polygons</span></span>
 <span><span class="va">labrador</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/rmapshaper/man/ms_explode.html" class="external-link">ms_explode</a></span><span class="op">(</span><span class="va">na</span><span class="op">[</span><span class="va">na</span><span class="op">$</span><span class="va">NAME_1</span> <span class="op"><a href="https://rspatial.github.io/terra/reference/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Newfoundland and Labrador"</span><span class="op">)</span>,</span>
 <span>    <span class="op">]</span><span class="op">)</span></span>
@@ -101,8 +101,7 @@ help with the mapping later.</p>
 <span><span class="va">region</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">region</span>, <span class="va">labrador</span><span class="op">)</span></span>
 <span><span class="va">qc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/rmapshaper/man/ms_simplify.html" class="external-link">ms_simplify</a></span><span class="op">(</span><span class="va">region</span>, <span class="fl">0.01</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Add it to the study region</span></span>
-<span><span class="va">region</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">region</span>, <span class="va">labrador</span><span class="op">)</span></span>
+<span><span class="co"># Add it to the study region region&lt;-rbind(region,labrador)</span></span>
 <span></span>
 <span><span class="co"># Simplify polygons to make things faster</span></span>
 <span><span class="va">region</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/rmapshaper/man/ms_simplify.html" class="external-link">ms_simplify</a></span><span class="op">(</span><span class="va">region</span>, <span class="fl">0.005</span><span class="op">)</span></span>
@@ -257,10 +256,10 @@ study area diameter and a relatively large outer area for reducing edge
 effects. See <a href="">virgilio</a> for advices on creating a good
 mesh.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">pedge</span><span class="op">&lt;-</span><span class="fl">0.005</span></span>
+<code class="sourceCode R"><span><span class="va">pedge</span><span class="op">&lt;-</span><span class="fl">0.01</span></span>
 <span><span class="va">edge</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_bbox.html" class="external-link">st_bbox</a></span><span class="op">(</span><span class="va">region</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">3</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">*</span><span class="va">pedge</span>,<span class="fu"><a href="https://rspatial.github.io/terra/reference/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_bbox.html" class="external-link">st_bbox</a></span><span class="op">(</span><span class="va">region</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">4</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">*</span><span class="va">pedge</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">edge</span></span>
-<span><span class="co">#&gt; [1] 12904.38</span></span>
+<span><span class="co">#&gt; [1] 25808.77</span></span>
 <span></span>
 <span><span class="va">mesh</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/INLA/man/inla.mesh.2d.html" class="external-link">inla.mesh.2d</a></span><span class="op">(</span>loc.domain <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>                     max.edge <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">edge</span>,<span class="va">edge</span><span class="op">*</span><span class="fl">3</span><span class="op">)</span>,</span>
@@ -329,40 +328,7 @@ species and of the background.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">params</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dmesh_effort.html">dmesh_effort</a></span><span class="op">(</span><span class="va">params</span>, obs <span class="op">=</span> <span class="va">obs</span>, background <span class="op">=</span> <span class="va">bg</span>, buffer <span class="op">=</span> <span class="va">buff</span>,</span>
-<span>    adjust <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># w &lt;- which((params$effort$nobs == params$effort$nbackground) &amp;</span></span>
-<span><span class="co"># (params$effort$nobs &gt; 0)) params$effort[w, 2:3] &lt;- params$effort[w,</span></span>
-<span><span class="co"># 2:3] * 500 hist(params$effort$nobs / params$effort$nbackground,</span></span>
-<span><span class="co"># breaks = 50)</span></span>
-<span></span>
-<span><span class="co"># w &lt;- which(params$weights == 0) params$effort[w, ] &lt;- 0</span></span>
-<span></span>
-<span><span class="co"># w &lt;- which(params$effort$nbackground &gt; 0) params$effort[w, 2:3] &lt;-</span></span>
-<span><span class="co"># params$effort[w, 1]</span></span>
-<span></span>
-<span><span class="co"># plot(sdm$mean) plot(st_geometry(params$dmesh),add=T)</span></span>
-<span><span class="co"># text(st_coordinates(st_centroid(params$dmesh)), label =</span></span>
-<span><span class="co"># 1:nrow(params$dmesh), cex = 0.5)</span></span>
-<span></span>
-<span><span class="co"># params$effort[c(30, 139),]</span></span>
-<span></span>
-<span><span class="co"># source('https://raw.githubusercontent.com/frousseu/FRutils/refs/heads/master/R/colo.scale.R')</span></span>
-<span><span class="co"># par(mar=c(0,0,0,0)) plot(st_geometry(params$dmesh), col =</span></span>
-<span><span class="co"># colo.scale(params$effort$nobs / params$effort$nbackground,</span></span>
-<span><span class="co"># c('gold', 'forestgreen'))) plot(st_geometry(params$dmesh), col =</span></span>
-<span><span class="co"># colo.scale(ifelse(params$weights &gt; 0, params$weights, NA),</span></span>
-<span><span class="co"># c('gold', 'forestgreen'))) plot(st_geometry(region), add = TRUE)</span></span>
-<span></span>
-<span></span>
-<span><span class="co"># plot(st_geometry(region), add = TRUE)</span></span>
-<span><span class="co"># plot(st_geometry(params$dmesh), add = TRUE)</span></span>
-<span></span>
-<span><span class="co"># mapview(region) + mapview(params$dmesh)</span></span>
-<span></span>
-<span><span class="co"># plot(sdm$mean) plot(st_geometry(region), border = 'red', lwd = 1,</span></span>
-<span><span class="co"># add = T) plot(st_geometry(params$dmeshcuts), border = 'red', add =</span></span>
-<span><span class="co"># T) plot(mesh, add = T)</span></span></code></pre></div>
+<span>    adjust <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level3">
@@ -385,7 +351,6 @@ inhomogeneous point process weighted for effort.</p>
 <span>  prior.sigma <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.00001</span>, <span class="cn">NA</span><span class="op">)</span>,</span>
 <span>  smooth <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  num.threads<span class="op">=</span><span class="fl">2</span><span class="op">:</span><span class="fl">2</span>,</span>
-<span>  <span class="co">#blas.num.threads=2,</span></span>
 <span>  control.inla<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    strategy<span class="op">=</span><span class="st">"adaptive"</span>, <span class="co"># "adaptive"</span></span>
 <span>    int.strategy<span class="op">=</span><span class="st">"eb"</span>, <span class="co"># "eb"</span></span>
@@ -435,30 +400,7 @@ the link scale.</p>
 <span><span class="fu">add_shp</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ewlgcpSDM_files/figure-html/unnamed-chunk-18-1.png" width="700"></p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>, mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">4</span>, <span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span></span>
-<span><span class="co"># plot(exp(sdm$linkmean-sdm$spacemean))</span></span>
-<span><span class="co"># plot(mask(exp(sdm$linkmean-sdm$spacemean), vect(region)))</span></span>
-<span><span class="co"># plot(sdm$spacemean) plot(sdm$mean)</span></span>
-<span></span>
-<span><span class="co"># source('https://raw.githubusercontent.com/frousseu/FRutils/refs/heads/master/R/colo.scale.R')</span></span>
-<span><span class="co"># par(mfrow = c(1, 2), mar=c(0,0,0,0)) plot(sdm$spacemean, mar = c(0,</span></span>
-<span><span class="co"># 0, 0, 0)) plot(st_geometry(region), add = TRUE) rat &lt;-</span></span>
-<span><span class="co"># params$effort$nobs / params$effort$nbackground rat &lt;- ifelse(rat ==</span></span>
-<span><span class="co"># 0, NA, rat) plot(st_geometry(params$dmesh), border = NA, col =</span></span>
-<span><span class="co"># colo.scale(rat, c('gold', 'forestgreen')))</span></span>
-<span><span class="co"># plot(st_geometry(region), add = TRUE)</span></span>
-<span></span>
-<span></span>
-<span><span class="co"># e &lt;- extract(sdm$mean, params$dmesh, fun = mean, na.rm = T)</span></span>
-<span><span class="co"># plot(e[, 2], params$effort$nobs / params$effort$nbackground)</span></span>
-<span></span>
-<span><span class="co"># r2 &lt;- sdm$mean r2 &lt;- exp(sdm$linkmean-sdm$spacemean) plot(c(r1,</span></span>
-<span><span class="co"># r2), range = range(global(c(r1, r2), 'range', na.rm = T)), mar =</span></span>
-<span><span class="co"># c(0, 0, 0, 7)) plot(r2-r1, col =</span></span>
-<span><span class="co"># colo.scale(sort(unique(values(r2-r1)[,1])),</span></span>
-<span><span class="co"># c('blue','white','red'), center = TRUE))</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>, mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">4</span>, <span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
