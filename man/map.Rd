@@ -4,7 +4,15 @@
 \alias{map}
 \title{Construct species distribution maps models}
 \usage{
-map(model, dmesh, dims, region = NULL, sample = FALSE, nsamples = 100)
+map(
+  model,
+  dmesh,
+  dims,
+  region = NULL,
+  mask = FALSE,
+  sample = FALSE,
+  nsamples = 100
+)
 }
 \arguments{
 \item{model}{An object of class \code{ppSpace} or of class \code{uniSpace}.}
@@ -14,6 +22,8 @@ map(model, dmesh, dims, region = NULL, sample = FALSE, nsamples = 100)
 \item{dims}{A vector of length 2 defining the number of pixels to use as rows and columns to define the map.}
 
 \item{region}{A spatial polygon to isolate the region of interest. If none is given, a map is drawn for the entire region covered by the mesh.}
+
+\item{mask}{Logical. Whether to mask the output raster with the region. Default is \code{FALSE}.}
 
 \item{sample}{Logical. Whether to sample from the posterior distribution of each cell using \code{INLA}'s \code{inla.posterior.sample}. Returns a raster stack of each sample along with other types specified. Default to \code{FALSE}. Currently ignored.}
 

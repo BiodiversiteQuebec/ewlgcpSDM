@@ -178,7 +178,7 @@ grid.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">dups</span><span class="op">)</span></span>
 <span><span class="co">#&gt; dups</span></span>
 <span><span class="co">#&gt; FALSE  TRUE </span></span>
-<span><span class="co">#&gt;  2321   525</span></span>
+<span><span class="co">#&gt;  2327   526</span></span>
 <span><span class="va">obs</span> <span class="op">&lt;-</span> <span class="va">obs</span><span class="op">[</span><span class="op">!</span><span class="va">dups</span>, <span class="op">]</span></span></code></pre></div>
 </div>
 <div class="section level4">
@@ -373,12 +373,9 @@ inhomogeneous point process weighted for effort.</p>
 with the different uncertainty measures and the spatial component.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sdm</span> <span class="op">&lt;-</span> <span class="fu">ewlgcpSDM</span><span class="fu">::</span><span class="fu"><a href="../reference/map.html">map</a></span><span class="op">(</span>model <span class="op">=</span> <span class="va">m</span>, dmesh <span class="op">=</span> <span class="va">params</span>, dims <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1500</span>, <span class="fl">1500</span><span class="op">)</span>,</span>
-<span>    region <span class="op">=</span> <span class="va">region</span><span class="op">)</span></span>
+<span>    region <span class="op">=</span> <span class="va">region</span>, mask <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning in fm_crs_bounds(crs, warn.unknown = TRUE): Could not determine shape</span></span>
-<span><span class="co">#&gt; of transformation bounds. Using infinite rectangle.</span></span>
-<span></span>
-<span><span class="va">sdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/mask.html" class="external-link">mask</a></span><span class="op">(</span><span class="va">sdm</span>, <span class="fu"><a href="https://rspatial.github.io/terra/reference/vect.html" class="external-link">vect</a></span><span class="op">(</span><span class="va">region</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/crs.html" class="external-link">crs</a></span><span class="op">(</span><span class="va">sdm</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/crs.html" class="external-link">crs</a></span><span class="op">(</span><span class="va">region</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co">#&gt; of transformation bounds. Using infinite rectangle.</span></span></code></pre></div>
 <p>We can finally map the intensity (sdm) along with the uncertainty on
 the link scale.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">

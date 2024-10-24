@@ -281,11 +281,10 @@ The `map` function will produce an intensity raster along with the different unc
 sdm<-ewlgcpSDM::map(model=m,
                     dmesh=params,
                     dims=c(1500,1500),
-                    region = region
+                    region = region,
+                    mask = TRUE
 )
 
-sdm<-mask(sdm,vect(region))
-crs(sdm)<-crs(region)
 ```
 
 We can finally map the intensity (sdm) along with the uncertainty on the link scale.

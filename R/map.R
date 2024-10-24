@@ -6,6 +6,7 @@
 #' @param dmesh The dmesh list
 #' @param dims A vector of length 2 defining the number of pixels to use as rows and columns to define the map.
 #' @param region A spatial polygon to isolate the region of interest. If none is given, a map is drawn for the entire region covered by the mesh.
+#' @param mask Logical. Whether to mask the output raster with the region. Default is \code{FALSE}.
 #' @param sample Logical. Whether to sample from the posterior distribution of each cell using \code{INLA}'s \code{inla.posterior.sample}. Returns a raster stack of each sample along with other types specified. Default to \code{FALSE}. Currently ignored.
 #' @param nsamples Integer. Number of samples to draw from the posterior. Ignored if \code{sample = FALSE}.
 #'
@@ -28,7 +29,7 @@
 #'
 #' @export
 #'
-map <- function(model, dmesh, dims, region = NULL, sample = FALSE, nsamples = 100){
+map <- function(model, dmesh, dims, region = NULL, mask = FALSE, sample = FALSE, nsamples = 100){
 
   ### Names to extract and/or assign to layers
   valsPred<-c("mean", "sd", "0.025quant", "0.5quant", "0.975quant","mode")
@@ -98,5 +99,9 @@ map <- function(model, dmesh, dims, region = NULL, sample = FALSE, nsamples = 10
   mapRaster<-rast(a[,,dim(a)[3]:1], crs = dmesh$mesh$crs$wkt) # uses terra for now
   ext(mapRaster)<-c(xmin = min(mapBasis$x), xmax = max(mapBasis$x),ymin = min(mapBasis$y), ymax = max(mapBasis$y))
   names(mapRaster)<-c(valsPred,paste0("link",valsLink),paste0("space",valsSpat),valsSamp)
-  mapRaster
+  if(mask){
+    mask(mapRaster, region)
+  }else{
+    mapRaster
+  }
 }
