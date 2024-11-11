@@ -6,7 +6,8 @@
 #' This function summarizes predictors to dual mesh. Predictors are assumed to be numerical values.
 #'
 #' @param dmesh A dual mesh
-#' @param predictors A SpatRaster with predictor values. If processing in parallel, the SpatRastre needs to be wrapped using \link{\code{terra::wrap}}.
+#' @param predictors A SpatRaster with predictor values. If processing in parallel, the SpatRaster needs to be wrapped using \link{\code{terra::wrap}}.
+#' @param \dots Further arguments to pass to \link{\code{exactextractr::exact_extract}}, such as \code{progress = TRUE}.
 #'
 #'
 #' @details
@@ -30,7 +31,7 @@
 #'
 #'
 #'
-dmesh_predictors<-function(dmesh,predictors){
+dmesh_predictors<-function(dmesh, predictors, ...){
   cores<-nbrOfWorkers() # get nbr of workers from the chosen plan
   if(cores>1){
     if(!inherits(predictors,"PackedSpatRaster")){
@@ -54,7 +55,7 @@ dmesh_predictors<-function(dmesh,predictors){
                       colSums(vals*covs,na.rm=TRUE)/colSums(covs,na.rm=TRUE)
                     },
                     force_df = FALSE,
-                    progress = TRUE)
+                    ...)
     if(is.null(dim(res))){
       res<-matrix(res,nrow=1)
       dimnames(res)[[1]]<-names(predictors)

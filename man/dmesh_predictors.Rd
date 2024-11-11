@@ -4,12 +4,14 @@
 \alias{dmesh_predictors}
 \title{Summarize predictors to dual mesh}
 \usage{
-dmesh_predictors(dmesh, predictors)
+dmesh_predictors(dmesh, predictors, ...)
 }
 \arguments{
 \item{dmesh}{A dual mesh}
 
-\item{predictors}{A SpatRaster with predictor values. If processing in parallel, the SpatRastre needs to be wrapped using \link{\code{terra::wrap}}.}
+\item{predictors}{A SpatRaster with predictor values. If processing in parallel, the SpatRaster needs to be wrapped using \link{\code{terra::wrap}}.}
+
+\item{\dots}{Further arguments to pass to \link{\code{exactextractr::exact_extract}}, such as \code{progress = TRUE}.}
 }
 \value{
 A list to which an element predictors is added with a \code{data.frame} of predictor values.
