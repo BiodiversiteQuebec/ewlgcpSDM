@@ -33,19 +33,21 @@
 #'
 dmesh_predictors<-function(dmesh, predictors, ...){
   cores<-nbrOfWorkers() # get nbr of workers from the chosen plan
-  if(cores>1){
-    if(!inherits(predictors,"PackedSpatRaster")){
-      stop("The SpatRaster of predictors needs to be wrapped for parallel processing. See ?terra::wrap.")
+  if(!inherits(predictors,"PackedSpatRaster")){
+    if(cores > 1){
+      predictors <- wrap(predictors)
     }
-    predictors<-unwrap(predictors)
   }
   dm<-dmesh$dmesh
-  if(!(st_crs(dm)==st_crs(predictors))){
+  if(!(st_crs(dm)==st_crs(unwrap(predictors)))){
     stop("Dual mesh and predictors have different crs")
   }
   chunks <- split(1:nrow(dm), rep(1:cores, each=ceiling(nrow(dm)/cores))[1:nrow(dm)])
-  options(future.globals.maxSize = 1000 * 1024 ^ 2)
+  options(future.globals.maxSize = 5000 * 1024 ^ 2)
   res<-future_lapply(chunks,function(chunksi){
+    if(inherits(predictors,"PackedSpatRaster")){
+      predictors <- unwrap(predictors)
+    }
     res<-exact_extract(predictors,
                     dm[chunksi,],
                     fun = function(values, coverage_fraction){
