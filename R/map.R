@@ -4,7 +4,7 @@
 #'
 #' @param model An object of class \code{ppSpace} or of class \code{uniSpace}.
 #' @param dmesh The dmesh list
-#' @param dims A vector of length 2 defining the number of pixels to use as rows and columns to define the map.
+#' @param dims A vector of length 2 defining the number of pixels to use as rows and columns to define the map. Currently this argument is ignored and the output raster is taken from the predictor raster in the \code{dmesh} object.
 #' @param region A spatial polygon to isolate the region of interest. If none is given, a map is drawn for the entire region covered by the mesh.
 #' @param mask Logical. Whether to mask the output raster with the region. Default is \code{FALSE}.
 #' @param sample Logical. Whether to sample from the posterior distribution of each cell using \code{INLA}'s \code{inla.posterior.sample}. Returns a raster stack of each sample along with other types specified. Default to \code{FALSE}. Currently ignored.
@@ -41,16 +41,23 @@ map <- function(model, dmesh, dims, region = NULL, mask = FALSE, sample = FALSE,
     valsSamp<-NULL
   }
 
+  p <- unwrap(dmesh$raster)
+  dims <- c(ncol(p), nrow(p))
+  
   ### Define map basis
   if(is.null(region)){
     mapBasis <- inla.mesh.projector(dmesh$mesh,
                                     dims = dims,
                                     crs = dmesh$mesh$crs)
   }else{
+    p <- crop(p, region)
+    xlim <- ext(p)[1:2]
+    ylim <- ext(p)[3:4]
+    dims <- c(ncol(p), nrow(p))
     mapBasis <- inla.mesh.projector(dmesh$mesh,
                                     dims = dims,
-                                    xlim = st_bbox(region)[c(1,3)],
-                                    ylim = st_bbox(region)[c(2,4)],
+                                    xlim = xlim,
+                                    ylim = ylim,
                                     crs = dmesh$mesh$crs)
   }
 
