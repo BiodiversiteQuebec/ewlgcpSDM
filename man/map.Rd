@@ -19,7 +19,7 @@ map(
 
 \item{dmesh}{The dmesh list}
 
-\item{dims}{A vector of length 2 defining the number of pixels to use as rows and columns to define the map.}
+\item{dims}{A vector of length 2 defining the number of pixels to use as rows and columns to define the map. Currently this argument is ignored and the output raster is taken from the predictor raster in the \code{dmesh} object.}
 
 \item{region}{A spatial polygon to isolate the region of interest. If none is given, a map is drawn for the entire region covered by the mesh.}
 
