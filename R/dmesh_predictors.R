@@ -94,6 +94,8 @@ dmesh_predictors<-function(dmesh, predictors, ...){
   res<-res[,order(colnames(res))]
 
 
-  dmesh[["predictors"]]<-res
+  dmesh[["predictors"]] <- res
+  p <- unwrap(predictors)
+  dmesh[["raster"]] <- suppressWarnings(wrap(rast(ext(p), res = res(p), crs = crs(p))))
   dmesh
 }
