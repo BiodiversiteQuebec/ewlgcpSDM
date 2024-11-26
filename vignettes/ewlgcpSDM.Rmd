@@ -278,7 +278,7 @@ m<-ewlgcp(
 
 The `map` function will produce an intensity raster along with the different uncertainty measures and the spatial component.
 ```{r}
-sdm<-ewlgcpSDM::map(model=m,
+sdm <- ewlgcpSDM::map(model=m,
                     dmesh=params,
                     dims=c(1500,1500),
                     region = region,
